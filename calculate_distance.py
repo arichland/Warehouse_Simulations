@@ -44,7 +44,7 @@ def next_location(start_loc, list_locs, y_low, y_high):
     index_min = list_dist.index(min(list_dist))
     next_loc = list_locs[index_min]  # Next location is the first location with distance = min (**)
     list_locs.remove(next_loc)  # Next location is removed from the list of candidates
-    print(list_locs, "start=", start_loc, "next=", next_loc, "d-next=", distance_next)
+    print(list_locs, "start=", start_loc, "next=", next_loc, "distance to next pick=", distance_next)
 
     return list_locs, start_loc, next_loc, distance_next
 

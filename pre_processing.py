@@ -18,6 +18,63 @@ def import_dataset():
     con = pymysql.connect(user=user, password=pw, host=host, database=db)
     with con.cursor() as cur:
         try:
+            query = """
+                SELECT 
+                tbl_wms_orders.timestamp, 
+                tbl_wms_orders.sku, tbl_wms_orders.quantity, 
+                tbl_wms_coordinates.location AS poo, 
+                tbl_wms_coordinates.x_coordinate AS poo_x, 
+                tbl_wms_coordinates.y_coordinate AS poo_y, 
+                tbl_wms_coordinates_1.location AS pod, 
+                tbl_wms_coordinates_1.x_coordinate AS pod_x, 
+                tbl_wms_coordinates_1.y_coordinate AS pod_y
+                FROM tbl_wms_coordinates AS tbl_wms_coordinates_1 
+                INNER JOIN (tbl_wms_coordinates INNER JOIN tbl_wms_orders ON tbl_wms_coordinates.id = tbl_wms_orders.fk_poo) ON tbl_wms_coordinates_1.id = tbl_wms_orders.fk_pod
+                ORDER BY tbl_wms_orders.timestamp ASC;"""
+            cur.execute(query)
+            col = cur.description
+            rows = cur.fetchall()
+
+            for i in range(len(col)):
+                headers.append(col[i][0])
+
+            # SQL query to dict
+            for row in rows:
+                count += 1
+                temp_dict = {count: {
+                    headers[0]: dt.isoformat(row[0]),
+                    headers[1]: row[1],
+                    headers[2]: row[2],
+                    headers[3]: row[3],
+                    headers[4]: row[4],
+                    headers[5]: row[5],
+                    headers[6]: row[6],
+                    headers[7]: row[7],
+                    headers[8]: row[8],
+                    "poo_coord": (row[4], row[5]),
+                    "pod_coord": (row[7], row[8])
+                }}
+                data.update(temp_dict)
+        finally:
+            con.commit()
+    cur.close()
+    con.close()
+    return data
+
+def import_dataset_original():
+    sql = pydict.localhost.get
+    user = sql('user')
+    pw = sql('password')
+    host = sql('host')
+    db = sql('database')
+    count = 0
+    dt = datetime
+    data = {}
+    headers = []
+
+    con = pymysql.connect(user=user, password=pw, host=host, database=db)
+    with con.cursor() as cur:
+        try:
             qry_create_table = """
              SELECT 
              tbl_wms_orders.timestamp, 
@@ -74,25 +131,30 @@ def import_dataset():
     con.close()
     return data
 
+
+
 import_dataset()
 
 d = import_dataset()
 
+y_low = 0
+y_high = 130
+origin = (0, 0)
+picks = []
+
 for i in range(len(d)):
-    start_loc = (1, 12)
-    y_low = 1
-    y_high = 12
-    loc1 = d[i+1]['item_coord']
-    loc2 = d[i+1]['dest_coord']
-
-    #dist = cd.distance_picking(loc1, loc2, 1, 12)
-
+    poo = d[i+1]['poo']
+    pod = d[i+1]['pod']
+    picks.append(d[i+1]['poo_coord'])
+    loc1 = d[i+1]['poo_coord']
+    end = d[i+1]['pod_coord']
+    print(poo, loc1)
 
 
-list_locs = [[1, 12], [19, 12], [2, 2], [10, 12]]
-start_loc = (1, 1)
-y_low = 1
-y_high = 12
 
-#cd.next_location(start_loc, list_locs, y_low, y_high)
-cd.create_picking_route(start_loc, list_locs, y_low, y_high)
+
+
+#cd.next_location(origin, picks, y_low, y_high)
+print("\nRoute")
+cd.create_picking_route(origin, picks, y_low, y_high)
+#cd.create_picking_route(start_loc, list_locs, y_low, y_high)

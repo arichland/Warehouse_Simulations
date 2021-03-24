@@ -170,9 +170,32 @@ def tbl_wms_coordinates():
             qry_create_table = """
             CREATE TABLE IF NOT EXISTS tbl_wms_coordinates(
             id INT AUTO_INCREMENT PRIMARY KEY,
-            storage_location TEXT,
+            location TEXT,
             x_coordinate INT,
             y_coordinate INT)
+            ENGINE=INNODB;"""
+            cur.execute(qry_create_table)
+        finally:
+            con.commit()
+    cur.close()
+    con.close()
+
+def tbl_wms_distances():
+    sql = pydict.localhost.get
+    user = sql('user')
+    pw = sql('password')
+    host = sql('host')
+    db = sql('database')
+
+    con = pymysql.connect(user=user, password=pw, host=host, database=db)
+    with con.cursor() as cur:
+        try:
+            qry_create_table = """
+            CREATE TABLE IF NOT EXISTS tbl_wms_distances(
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            fk_point_of_origin INT,
+            fk_point_of_destination INT,
+            distance INT)
             ENGINE=INNODB;"""
             cur.execute(qry_create_table)
         finally:
@@ -194,9 +217,11 @@ def tbl_wms_orders():
             CREATE TABLE IF NOT EXISTS tbl_wms_orders(
             id INT AUTO_INCREMENT PRIMARY KEY,
             timestamp DATETIME,
-            reference_id INT,
-            quantity INT,
-            destination TEXT)
+            order_id INT,
+            sku TEXT,
+            fk_poo INT,
+            fk_pod INT,
+            quantity INT)
             ENGINE=INNODB;"""
             cur.execute(qry_create_table)
         finally:
@@ -207,5 +232,6 @@ def tbl_wms_orders():
 def tables():
     tbl_wms_master_data()
     tbl_wms_coordinates()
+    tbl_wms_distances()
     tbl_wms_orders()
 tables()

@@ -1,11 +1,15 @@
 This app is design to run simulations for various warehouse layouts to identify the optimal design with specified constraints.
-Currenlty, it is basic onl on the 'Base' layout, however it will be able to use other layouts in the future (JPG of layouts are located in layouts folder).
+Currently, it is basic onl on the 'Base' layout, however it will be able to use other layouts in the future (JPG of layouts are located in layouts folder).
 Data from orders and SKUs are pull from a SQL database, as well as locations of SKUs in the warehouse. Distances are calculated from point-to-point and an optimal route will be returned.
 
 Assumptions
 1. Items are picked one at a time
 2. Items are picked from their location and transported to a loading area
 3. Time is not factored or calculated, only distance
+
+Tips:
+1. Distance is calculated using the difference between coordinates. For better accuracy, use a unit of measure for distance for coordinated, i.e. number of feet or meters between points.
+2. Develop a scheme for locations within the warehouse that does not necessarily depend upon x,y coordinates.
 
 Warehouse Layouts:
 Base/Traditional
